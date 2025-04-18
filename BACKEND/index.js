@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 5000;
 
 app.get("/", (req, res) => {
   console.log("hellow duniya");
-  res.send("hellow Omprakash kumar"); // Send response to browser
+  res.send("hellow Omprakash kumar who was your day"); // Send response to browser
 });
 
 app.listen(PORT, "0.0.0.0", () => {
