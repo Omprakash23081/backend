@@ -1,16 +1,19 @@
-const express = require("express");
 require("dotenv").config();
+const express = require("express");
 
 const app = express();
+const port = 5000;
 
-// Use Render-assigned PORT or fallback to 5000 locally
-const PORT = process.env.PORT || 5000;
+// Simple API
+app.get("/about", (req, res) => {
+  const data = {
+    title: "Hello",
+    description: "World",
+  };
 
-app.get("/", (req, res) => {
-  console.log("hellow duniya");
-  res.send("hellow Omprakash kumar"); // Send response to browser
+  res.send(data);
 });
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server is running on port ${PORT}`);
+app.listen(process.env.PORT, () => {
+  console.log(`Server is running on port ${port}`);
 });
