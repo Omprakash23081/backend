@@ -11,7 +11,7 @@ function home() {
       <h1>Welcome to the Home Page!</h1>
       <button>
         <NavLink to="/about">
-          <b>go on about page </b>
+          <b>about page</b>
         </NavLink>
       </button>
     </div>
