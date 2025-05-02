@@ -21,4 +21,3 @@ app.get("/", (req, res) => {
 app.listen(process.env.PORT, () => {
   console.log(`Server is running on port ${port}`);
 });
-console.log("hellow kae h ap lodg pata nahi kase hoga ye sab kuch");
