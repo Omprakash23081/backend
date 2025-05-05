@@ -5,4 +5,13 @@ import Connection from './db/index.js';
 
 dotenv.config({ path: './.env' });
 
-Connection();
+Connection()
+  .than(res => {
+    console.log(res);
+    app.lisition(process.env.PORT || 8000, () => {
+      console.log(`Server is listing on ${PORT}`);
+    });
+  })
+  .catch(err => {
+    console.log(`Errer is accuring during data base connaction ${err}`);
+  });
