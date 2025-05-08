@@ -6,10 +6,10 @@ import Connection from './db/index.js';
 dotenv.config({ path: './.env' });
 
 Connection()
-  .than(res => {
-    console.log(res);
+  .then(res => {
+    // console.log(res);
     app.lisition(process.env.PORT || 8000, () => {
-      console.log(`Server is listing on ${PORT}`);
+      // console.log(`Server is listing on ${PORT}`);
     });
   })
   .catch(err => {
