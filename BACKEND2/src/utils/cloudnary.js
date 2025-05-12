@@ -13,3 +13,5 @@ const uplodeOnCloudnary = async localFile => {
   console.log(response.url);
   return response;
 };
+
+export { uplodeOnCloudnary };
