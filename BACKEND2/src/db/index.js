@@ -9,7 +9,8 @@ const Connection = async () => {
     console.log('MongoDB connected successfully');
     console.log(`MongoDB connected:${ConnactionInstants.connection.host}`);
   } catch (error) {
-    console.error('Error connecting to MongoDB:', error);
+    console.log('errer in db folder ');
+    // console.error('Error connecting to MongoDB:', error);
   }
 };
 
