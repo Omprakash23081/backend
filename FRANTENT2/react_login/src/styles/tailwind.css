@@ -1,0 +1,97 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Primary Colors */
+    --color-primary: #2563EB; /* blue-600 */
+    --color-primary-hover: #1D4ED8; /* blue-700 */
+    --color-primary-light: #DBEAFE; /* blue-100 */
+    
+    /* Neutral Colors */
+    --color-background: #FFFFFF; /* white */
+    --color-surface: #F9FAFB; /* gray-50 */
+    --color-border: #E5E7EB; /* gray-200 */
+    --color-text-primary: #111827; /* gray-900 */
+    --color-text-secondary: #4B5563; /* gray-600 */
+    --color-text-tertiary: #9CA3AF; /* gray-400 */
+    
+    /* Semantic Colors */
+    --color-success: #16A34A; /* green-600 */
+    --color-error: #DC2626; /* red-600 */
+    --color-warning: #F59E0B; /* amber-500 */
+    --color-info: #0EA5E9; /* sky-500 */
+    
+    /* Brand Colors */
+    --color-brand-50: #f0f9ff; /* brand-50 */
+    --color-brand-100: #e0f2fe; /* brand-100 */
+    --color-brand-500: #0ea5e9; /* brand-500 */
+    --color-brand-600: #2563eb; /* brand-600 */
+    --color-brand-700: #1d4ed8; /* brand-700 */
+  }
+}
+
+@layer components {
+  /* Typography styles */
+  .display {
+    @apply text-4xl font-bold font-sans;
+  }
+  
+  .heading-1 {
+    @apply text-3xl font-semibold font-sans;
+  }
+  
+  .heading-2 {
+    @apply text-2xl font-semibold font-sans;
+  }
+  
+  .heading-3 {
+    @apply text-xl font-medium font-sans;
+  }
+  
+  .body-large {
+    @apply text-lg font-normal font-sans;
+  }
+  
+  .body {
+    @apply text-base font-normal font-sans;
+  }
+  
+  .body-small {
+    @apply text-sm font-normal font-sans;
+  }
+  
+  .caption {
+    @apply text-xs font-normal font-sans;
+  }
+  
+  /* Button styles */
+  .btn-primary {
+    @apply bg-primary text-white font-medium px-4 py-2 rounded-md hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors;
+  }
+  
+  .btn-secondary {
+    @apply bg-white text-primary border border-primary font-medium px-4 py-2 rounded-md hover:bg-primary-light focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors;
+  }
+  
+  .btn-outline {
+    @apply bg-transparent text-primary border border-primary font-medium px-4 py-2 rounded-md hover:bg-primary-light focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors;
+  }
+  
+  .btn-link {
+    @apply text-primary font-medium hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors;
+  }
+  
+  /* Input styles */
+  .input-default {
+    @apply w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary;
+  }
+  
+  .input-error {
+    @apply w-full px-3 py-2 border border-error rounded-md focus:outline-none focus:ring-2 focus:ring-error focus:border-error;
+  }
+}
