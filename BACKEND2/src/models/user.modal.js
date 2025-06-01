@@ -2,7 +2,7 @@ import mongooes from 'mongoose';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
-const userSchema = new mongoose.Schema(
+const userSchema = new mongooes.Schema(
   {
     username: {
       type: String,
@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    coverImage: {
+    coverImgae: {
       type: String,
     },
     watchHistory: [
@@ -84,4 +84,4 @@ userSchema.methods.generateRefreshToken = function () {
     }
   );
 };
-export const userModel = mongoose.model('User', userSchema);
+export const User = mongooes.model('User', userSchema);

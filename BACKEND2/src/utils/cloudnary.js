@@ -1,17 +1,25 @@
 import { v2 as cloudnary } from 'cloudinary';
-import { error } from 'console';
 import fs from 'fs';
 
-const uplodeOnCloudnary = async localFile => {
-  if (!localFile) return;
-  const response = await cloudnary.uploader
-    .upload(localFile, { resource_type: 'auto' })
-    .catch(error => {
-      fs.unlinkSync(localFile);
-      console.log(error);
+cloudnary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET,
+});
+
+const uplodeOnCloudnary = async localFilePath => {
+  try {
+    if (!localFilePath) return null;
+    //uplode file on cloudnary
+    const responce = await cloudnary.uploader.upload(localFilePath, {
+      resource_type: 'auto',
     });
-  console.log(response.url);
-  return response;
+    console.log('file is uplode sussefully', responce.url);
+    return responce;
+  } catch (errer) {
+    fs.unlink(localFilePath);
+    return null;
+  }
 };
 
 export { uplodeOnCloudnary };
