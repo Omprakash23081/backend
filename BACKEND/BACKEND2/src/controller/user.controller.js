@@ -17,6 +17,7 @@ const rejesterUser = asycHandaler(async (req, res) => {
   const existedUser = await User.findOne({
     $or: [{ username }, { email }],
   });
+
   if (existedUser) {
     throw new ApiErrer(409, 'user already exists');
   }
