@@ -9,12 +9,10 @@ import {
   updateProfileValidation,
 } from "../validation/user.validation.js";
 
-const isProduction = process.env.NODE_ENV === "production";
-
 const security = {
   httpOnly: true,
-  secure: isProduction,
-  sameSite: isProduction ? "none" : "lax",
+  secure: true,
+  sameSite: "none",
 };
 
 //this function complite
@@ -25,7 +23,7 @@ const loginUser = async (req, res) => {
 
   // Validate request body
   // Validation handled by middleware
-  
+
   const user = await User.findOne({ email });
   if (!user) {
     return res.status(404).json(new ApiResponse(404, null, "User not found"));
@@ -33,7 +31,11 @@ const loginUser = async (req, res) => {
 
   //in this application we have two window one for admin and another for user so during login we have to check role also and one another thing is that admin only can login they cannot register themselves they have to created by SuperAdmin
   if (role && user.role !== role) {
-    return res.status(403).json(new ApiResponse(403, null, `Access denied. Expected role: ${user.role}`));
+    return res
+      .status(403)
+      .json(
+        new ApiResponse(403, null, `Access denied. Expected role: ${user.role}`)
+      );
   }
 
   const isPasswordValid = await user.comparePassword(reqPassword);
@@ -44,22 +46,22 @@ const loginUser = async (req, res) => {
   // Streak Logic
   const now = new Date();
   if (user.lastLogin) {
-      const lastLoginDate = new Date(user.lastLogin);
-      const diffTime = Math.abs(now - lastLoginDate);
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const lastLoginDate = new Date(user.lastLogin);
+    const diffTime = Math.abs(now - lastLoginDate);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-      if (diffDays === 1) {
-          // Consecutive day login (roughly) - simplistic check, better to check calendar days
-          // A better approach for "daily" is checking if the day is different but diff is <= 2 days
-          // Let's use simple logic: if last login was "yesterday" (1 calendar day ago)
-          user.streak += 1;
-      } else if (diffDays > 1) {
-          // Missed a day
-          user.streak = 1;
-      }
-      // if diffDays == 0 (same day), keep streak
+    if (diffDays === 1) {
+      // Consecutive day login (roughly) - simplistic check, better to check calendar days
+      // A better approach for "daily" is checking if the day is different but diff is <= 2 days
+      // Let's use simple logic: if last login was "yesterday" (1 calendar day ago)
+      user.streak += 1;
+    } else if (diffDays > 1) {
+      // Missed a day
+      user.streak = 1;
+    }
+    // if diffDays == 0 (same day), keep streak
   } else {
-      user.streak = 1; // First login ever? Or migration
+    user.streak = 1; // First login ever? Or migration
   }
 
   user.lastLogin = now;
@@ -86,19 +88,23 @@ const loginUser = async (req, res) => {
 const logoutUser = async (req, res) => {
   // Try to clear token from DB if we can identify the user, but don't block response
   try {
-    const token = req.cookies?.accessToken || req.headers["authorization"]?.split(" ")[1];
+    const token =
+      req.cookies?.accessToken || req.headers["authorization"]?.split(" ")[1];
     if (token) {
-        const decoded = jwt.decode(token); // safe decode without verification
-        if (decoded?.id) {
-             await User.findByIdAndUpdate(
-                decoded.id,
-                { refreshToken: undefined },
-                { new: true }
-              );
-        }
+      const decoded = jwt.decode(token); // safe decode without verification
+      if (decoded?.id) {
+        await User.findByIdAndUpdate(
+          decoded.id,
+          { refreshToken: undefined },
+          { new: true }
+        );
+      }
     }
   } catch (error) {
-    console.log("Error clearing refresh token from DB during logout (non-fatal):", error);
+    console.log(
+      "Error clearing refresh token from DB during logout (non-fatal):",
+      error
+    );
   }
 
   // ALWAYS clear cookies
@@ -130,13 +136,13 @@ const refreshAccessToken = async (req, res) => {
     const user = await User.findById(decoded.id);
 
     if (!user) {
-        return res.status(401).json(new ApiResponse(401, null, "User not found"));
+      return res.status(401).json(new ApiResponse(401, null, "User not found"));
     }
 
     // Check if refreshToken matches (Handle both Array and String for backward compatibility)
-    const isTokenValid = Array.isArray(user.refreshToken) 
-        ? user.refreshToken.includes(refreshToken) 
-        : user.refreshToken === refreshToken;
+    const isTokenValid = Array.isArray(user.refreshToken)
+      ? user.refreshToken.includes(refreshToken)
+      : user.refreshToken === refreshToken;
 
     if (!isTokenValid) {
       return res
@@ -253,7 +259,7 @@ const getProfile = async (req, res) => {
 const updateProfile = async (req, res) => {
   const { name, email, year, bio, courses, achievements } = req.body;
   // Validation handled by middleware
-  
+
   const updateData = {};
   if (name) updateData.name = name;
   if (email) updateData.email = email;
@@ -261,7 +267,7 @@ const updateProfile = async (req, res) => {
   if (bio !== undefined) updateData.bio = bio;
   if (courses) updateData.courses = courses;
   if (achievements) updateData.achievements = achievements;
-  
+
   if (req.file?.path) {
     const imageUrl = await Upload(req.file.path);
     updateData.profileImage = imageUrl;
@@ -284,48 +290,54 @@ const updateProfile = async (req, res) => {
 
 const trackActivity = async (req, res) => {
   const { subjectName, type } = req.body; // type: "Notes" or "PYQ"
-  
+
   if (!subjectName) {
-      return res.status(400).json(new ApiResponse(400, null, "Subject name is required"));
+    return res
+      .status(400)
+      .json(new ApiResponse(400, null, "Subject name is required"));
   }
 
   try {
     const user = await User.findById(req.user._id);
-    if (!user) return res.status(404).json(new ApiResponse(404, null, "User not found"));
+    if (!user)
+      return res.status(404).json(new ApiResponse(404, null, "User not found"));
 
-    let courseIndex = user.courses.findIndex(c => c.name === subjectName);
-    
+    let courseIndex = user.courses.findIndex((c) => c.name === subjectName);
+
     if (courseIndex > -1) {
-        // Update existing
-        user.courses[courseIndex].lastAccessed = new Date();
-        // Increment progress slightly (mock logic), max 100
-        let newProgress = user.courses[courseIndex].progress + 5;
-        if (newProgress > 100) newProgress = 100;
-        user.courses[courseIndex].progress = newProgress;
-        
-        // Update time spent string (mock logic: increment hour if possible, else just set new)
-        // For simplicity, just cycling times or keeping static for now, or randomizing slightly
-        // Let's just keep it simple: if below 100%, assume they spent more time. 
+      // Update existing
+      user.courses[courseIndex].lastAccessed = new Date();
+      // Increment progress slightly (mock logic), max 100
+      let newProgress = user.courses[courseIndex].progress + 5;
+      if (newProgress > 100) newProgress = 100;
+      user.courses[courseIndex].progress = newProgress;
+
+      // Update time spent string (mock logic: increment hour if possible, else just set new)
+      // For simplicity, just cycling times or keeping static for now, or randomizing slightly
+      // Let's just keep it simple: if below 100%, assume they spent more time.
     } else {
-        // Add new
-        user.courses.push({
-            name: subjectName,
-            progress: 10,
-            timeSpent: "30m", // Initial time
-            lastAccessed: new Date()
-        });
+      // Add new
+      user.courses.push({
+        name: subjectName,
+        progress: 10,
+        timeSpent: "30m", // Initial time
+        lastAccessed: new Date(),
+      });
     }
-    
+
     // Sort courses by lastAccessed desc
     user.courses.sort((a, b) => b.lastAccessed - a.lastAccessed);
     // Limit to recent 5? Optional.
 
     await user.save();
-    return res.status(200).json(new ApiResponse(200, user.courses, "Activity tracked"));
-
+    return res
+      .status(200)
+      .json(new ApiResponse(200, user.courses, "Activity tracked"));
   } catch (error) {
     console.error("Track Activity Error:", error);
-    return res.status(500).json(new ApiResponse(500, null, "Failed to track activity"));
+    return res
+      .status(500)
+      .json(new ApiResponse(500, null, "Failed to track activity"));
   }
 };
 
@@ -333,7 +345,9 @@ const changePassword = async (req, res) => {
   const { oldPassword, newPassword } = req.body;
 
   if (!oldPassword || !newPassword) {
-    return res.status(400).json(new ApiResponse(400, null, "All fields are required"));
+    return res
+      .status(400)
+      .json(new ApiResponse(400, null, "All fields are required"));
   }
 
   try {
@@ -344,15 +358,27 @@ const changePassword = async (req, res) => {
 
     const isPasswordCorrect = await user.comparePassword(oldPassword);
     if (!isPasswordCorrect) {
-      return res.status(400).json(new ApiResponse(400, null, "Invalid old password"));
+      return res
+        .status(400)
+        .json(new ApiResponse(400, null, "Invalid old password"));
     }
 
     user.password = newPassword;
     await user.save();
 
-    return res.status(200).json(new ApiResponse(200, {}, "Password changed successfully"));
+    return res
+      .status(200)
+      .json(new ApiResponse(200, {}, "Password changed successfully"));
   } catch (error) {
-    return res.status(500).json(new ApiResponse(500, null, "Something went wrong while changing password"));
+    return res
+      .status(500)
+      .json(
+        new ApiResponse(
+          500,
+          null,
+          "Something went wrong while changing password"
+        )
+      );
   }
 };
 
@@ -364,5 +390,5 @@ export {
   getProfile,
   updateProfile,
   trackActivity,
-  changePassword
+  changePassword,
 };
