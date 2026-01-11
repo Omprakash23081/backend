@@ -46,22 +46,12 @@ app.use((req, res, next) => {
 app.use(
   cors({
     origin: [
-      "http://localhost:5173",
-      "http://localhost:5174",
-      "http://localhost:5176",
-      "https://studysharp-ltart.vercel.app",
+      "https://studysharp-liart.vercel.app",
+      "https://studysharps.netlify.app",
     ],
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-
-/*
-  ❌ REMOVED:
-  app.options("*", cors());
-  → This caused the path-to-regexp crash in Node 22
-*/
 
 /* =========================
    BODY PARSERS
