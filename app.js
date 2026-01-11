@@ -47,7 +47,9 @@ app.use(
   cors({
     origin: [
       "https://studysharp-liart.vercel.app",
+      "https://studysharp.netlify.app/",
       "https://studysharps.netlify.app",
+      "https://studysharps.netlify.app/",
     ],
     credentials: true,
   })
