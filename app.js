@@ -48,6 +48,8 @@ app.use(
     origin: [
       "https://studysharps.vercel.app/",
       "https://studysharp.netlify.app/",
+      "https://studysharps.vercel.app",
+      "https://studysharp.netlify.app",
     ],
     credentials: true,
   })
