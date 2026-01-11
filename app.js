@@ -45,6 +45,7 @@ app.use(
       "http://localhost:5174",
       "http://localhost:5176",
       "https://collage-mini-project-090y.onrender.com",
+      "https://studysharp-ltart.vercel.app",
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
