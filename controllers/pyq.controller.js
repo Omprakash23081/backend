@@ -8,52 +8,59 @@ import {
 import { PYQ } from "../models/pyq.model.js";
 
 const addPYQ = async (req, res) => {
-  try {
-    console.log("[DEBUG] addPYQ req.body:", req.body);
-    console.log("[DEBUG] addPYQ req.file:", req.file);
+  const {
+    subjectName,
+    teacherName,
+    year,
+    isPremium,
+    status,
+    isAll,
+    examType,
+    chapter,
+    chapterName,
+  } = req.body;
 
-    const { questionNumber, subjectName, question, tag, years, answer, isPremium, status, difficulty } =
-      req.body;
+  // Handle Joi validation
+  const resp = validatePYQ.validate(req.body);
+  if (resp.error) {
+    return res
+      .status(400)
+      .json(new ApiResponse(400, null, "Validation Failed: " + resp.error));
+  }
 
-    // Handle Joi validation
-    try {
-        await validatePYQ.validateAsync(req.body);
-    } catch (validationError) {
-        console.error("[DEBUG] Joi Validation Error:", validationError);
-        return res.status(400).json(new ApiResponse(400, validationError.details, "Validation Failed: " + validationError.message));
-    }
+  // if (req.user.role !== "admin") {
+  //   return res
+  //     .status(400)
+  //     .json(new ApiResponse(400, null, "PYQ can only be submitted by admin"));
+  // }
 
-    if (req.user.role !== "admin") {
-      return res
-        .status(400)
-        .json(new ApiResponse(400, null, "PYQ can only be submitted by admin"));
-    }
+  let fileUrl = null;
+  if (req.file?.path) {
+    fileUrl = await Upload(req.file.path);
+  }
 
-    let imageUrl = null;
-    if (req.file?.path) {
-      imageUrl = await Upload(req.file.path);
-    }
+  const response = await PYQ.create({
+    subjectName,
+    teacherName,
+    year,
+    fileUrl,
+    isPremium,
+    status,
+    isAll,
+    chapter,
+    chapterName,
+    examType,
+    uploadedBy: req.user,
+  });
 
-    const response = await PYQ.create({
-      questionNumber,
-      subjectName,
-      question,
-      tag,
-      years,
-      answer,
-      isPremium,
-      status,
-      difficulty,
-    });
-
+  if (response) {
     return res
       .status(200)
       .json(new ApiResponse(200, response, "PYQ uploaded successfully"));
-  } catch (err) {
-    console.error("[DEBUG] addPYQ Catch Error:", err);
+  } else {
     return res
-      .status(400)
-      .json(new ApiResponse(400, err, "Please enter valid inputs"));
+      .status(500)
+      .json(new ApiResponse(500, null, "Failed to upload PYQ"));
   }
 };
 
@@ -96,8 +103,17 @@ const updatePYQ = async (req, res) => {
   }
 
   try {
-    const { questionNumber, subjectName, question, tag, years, answer, isPremium, status, difficulty } =
-      req.body;
+    const {
+      questionNumber,
+      subjectName,
+      question,
+      tag,
+      years,
+      answer,
+      isPremium,
+      status,
+      difficulty,
+    } = req.body;
 
     await validatePYQUpdate.validateAsync(req.body);
 

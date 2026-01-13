@@ -4,10 +4,7 @@ import {
   validateNotes,
   UpdatevalidateNotes,
 } from "../validation/notes.validation.js";
-import {
-  StudyMaterial,
-  TesmpStudyMaterial,
-} from "../models/studyMaterial.model.js";
+import { StudyMaterial } from "../models/studyMaterial.model.js";
 
 const getNotes = async (req, res) => {
   try {
@@ -43,55 +40,67 @@ const getSpecificNotes = async (req, res) => {
 };
 
 const uplodeNotes = async (req, res) => {
-  try {
-    await validateNotes.validateAsync(req.body).catch((err) => {
-      return res.status(400).json(new ApiResponse(400, null, err));
-    });
+  const { err } = validateNotes.validate(req.body);
+  if (err) {
+    return res.status(400).json(new ApiResponse(400, null, err.message));
+  }
+  const {
+    subjectName,
+    teacherName,
+    year,
+    isPremium,
+    status,
+    isFull,
+    chapterName,
+  } = req.body;
+  const resourcesUrl = await Upload(req.file?.path);
+  let response = null;
 
-    const { subjectName, description, teacherName, year, type, isPremium, status, difficulty, isImportant } = req.body;
+  const obj = {
+    subjectName: subjectName?.toLowerCase(),
+    teacherName: teacherName?.toLowerCase(),
+    year,
+    isPremium,
+    isFull,
+    status,
+    uploadedBy: req.user,
+    fileUrl: resourcesUrl,
+    chapterName,
+  };
 
-    const resourcesUrl = await Upload(req.file?.path);
+  if (req.user.role === "admin") {
+    response = await StudyMaterial.create(obj);
+  } else {
+    return res
+      .status(403)
+      .json(new ApiResponse(403, null, "Notes can only uplode by admin"));
+  }
 
-    let response = null;
-
-    const obj = {
-      subjectName: subjectName?.toLowerCase(),
-      description,
-      teacherName: teacherName?.toLowerCase(),
-      year,
-      type,
-      isPremium,
-      isImportant,
-      status,
-      difficulty,
-      uploadedBy: req.user,
-      fileUrl: resourcesUrl,
-    };
-
-    if (req.user.role === "admin") {
-      response = await StudyMaterial.create(obj);
-    } else {
-      response = await TesmpStudyMaterial.create(obj);
-    }
-
-    if (response) {
-      return res
-        .status(200)
-        .json(new ApiResponse(200, response, "Notes Uplode sucessfully"));
-    } else {
-      return res
-        .status(500)
-        .json(new ApiResponse(500, null, "Faild to uplode notes "));
-    }
-  } catch (error) {
-    return res.status(500).json(new ApiResponse(500, null, error.message));
+  if (response) {
+    return res
+      .status(200)
+      .json(new ApiResponse(200, response, "Notes Uplode sucessfully"));
+  } else {
+    return res
+      .status(500)
+      .json(new ApiResponse(500, null, "Faild to uplode notes "));
   }
 };
 
 const updateNotes = async (req, res) => {
   try {
-    const { subjectName, description, teacherName, year, type, isPremium, status, difficulty, isImportant } = req.body;
-    let updateData = {}; 
+    const {
+      subjectName,
+      description,
+      teacherName,
+      year,
+      type,
+      isPremium,
+      status,
+      difficulty,
+      isImportant,
+    } = req.body;
+    let updateData = {};
     if (subjectName) updateData.subjectName = subjectName.toLowerCase();
     if (description) updateData.description = description;
     if (teacherName) updateData.teacherName = teacherName.toLowerCase();
@@ -112,8 +121,8 @@ const updateNotes = async (req, res) => {
     // validation (fix validation call if needed, or skip for partial update if UpdatevalidateNotes is strictly required)
     // Assuming UpdatevalidateNotes exists or we might want to skip explicit validation call here if Joi is strict on required fields
     // For now, let's keep it but ideally we should update UpdatevalidateNotes schema too.
-    
-     await UpdatevalidateNotes.validateAsync(req.body).catch((err) => {
+
+    await UpdatevalidateNotes.validateAsync(req.body).catch((err) => {
       // throw new Error(err.message || "Validation Error");
       // Joi might complain about missing fields if they are required in Update schema.
     });
@@ -140,7 +149,7 @@ const updateNotes = async (req, res) => {
         .json(new ApiResponse(403, null, "Notes can only update by admin"));
     }
   } catch (error) {
-     return res.status(500).json(new ApiResponse(500, null, error.message));
+    return res.status(500).json(new ApiResponse(500, null, error.message));
   }
 };
 
@@ -161,14 +170,10 @@ const delateNotes = async (req, res) => {
         .status(200)
         .json(new ApiResponse(200, response, "Notes Delete Sucessfully"));
     } else {
-      return res
-        .status(404)
-        .json(
-          new ApiResponse(404, null, "Item not found")
-        );
+      return res.status(404).json(new ApiResponse(404, null, "Item not found"));
     }
   } catch (error) {
-      return res.status(500).json(new ApiResponse(500, null, error.message));
+    return res.status(500).json(new ApiResponse(500, null, error.message));
   }
 };
 

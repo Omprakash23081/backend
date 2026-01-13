@@ -50,6 +50,7 @@ app.use(
       "https://studysharp.netlify.app/",
       "https://studysharps.vercel.app",
       "https://studysharp.netlify.app",
+      "http://localhost:5173",
     ],
     credentials: true,
   })

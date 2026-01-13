@@ -19,7 +19,7 @@ const upload = multer;
 //     maxCount: 1,
 //   },
 // ])
-const file = upload.single("image");
+const file = upload.single("Notes");
 
 // console.log("request is comming");
 

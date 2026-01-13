@@ -1,22 +1,22 @@
 import joi from "joi";
 
 export const validatePYQ = joi.object({
-  questionNumber: joi.number().required(),
   subjectName: joi.string().required(),
-  question: joi.string().required(),
-  tag: joi.string().allow('', null), // Changed to allow optional tag
-  years: joi.array().items(joi.string()).required(),
-  answer: joi.string().required(),
+  teacherName: joi.string().allow("", null),
+  year: joi.string().required(),
   isPremium: joi.boolean().default(false),
-  status: joi.string().valid("draft", "published", "archived").default("draft"),
-  difficulty: joi.string().valid("easy", "medium", "hard").default("medium"),
+  status: joi.string().valid("draft", "approved").default("draft"),
+  isAll: joi.boolean().default(false),
+  examType: joi.string().allow("", null),
+  chapter: joi.string().allow("", null),
+  chapterName: joi.string().allow("", null),
 });
 
 export const validatePYQUpdate = joi.object({
   questionNumber: joi.number(),
   subjectName: joi.string(),
   question: joi.string(),
-  tag: joi.string().allow('', null),
+  tag: joi.string().allow("", null),
   years: joi.array().items(joi.string()),
   answer: joi.string(),
   isPremium: joi.boolean(),

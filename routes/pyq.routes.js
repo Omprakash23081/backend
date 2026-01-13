@@ -11,7 +11,7 @@ import verifyJWT from "../middleware/auth.middleware.js";
 
 const router = Router();
 
-const file = upload.single("image");
+const file = upload.single("file");
 
 //this route will help to get all pyq for all
 router.route("/").get(verifyJWT, getPYQ);
