@@ -19,6 +19,10 @@ const eventSchem = new mongoose.Schema({
     type: String,
     required: true,
   },
+  registrationDate: {
+    type: String,
+    required: true,
+  },
   endDate: {
     type: String,
     required: true,

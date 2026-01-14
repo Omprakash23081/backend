@@ -142,6 +142,7 @@ const updatePYQ = async (req, res) => {
 
     return res.status(500).json(new ApiResponse(500, null, "Failed to update"));
   } catch (err) {
+    console.log("Update PYQ Error:", err);
     return res
       .status(400)
       .json(new ApiResponse(400, err, "Please enter valid inputs"));

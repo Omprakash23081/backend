@@ -42,4 +42,11 @@ router.use("/dashboard", dashboardRoutes);
 // Search Engine
 router.use("/search", searchRoutes);
 
+import planRoutes from "./plan.routes.js";
+router.use("/plans", planRoutes);
+
+import feedbackRoutes from "./feedbackRoutes.js";
+console.log("DEBUG: Loading feedback routes in index.js");
+router.use("/feedback", feedbackRoutes);
+
 export default router;

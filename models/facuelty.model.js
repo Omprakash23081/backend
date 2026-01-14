@@ -4,13 +4,17 @@ const facueltySchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      require: true,
+      required: true,
     },
-    departement: {
+    department: {
       type: String,
       required: true,
     },
-    exprence: {
+    designation: {
+      type: String,
+      required: true,
+    },
+    experience: {
       type: Number,
       required: true,
     },

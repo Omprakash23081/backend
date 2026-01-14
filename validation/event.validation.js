@@ -7,13 +7,15 @@ export const eventValidation = joi
     link: joi.string().uri().required(),
     description: joi.string(),
     endDate: joi.date().required(),
+    registrationDate: joi.date().required(),
   })
   .min(4);
 
 export const UpdateeventValidation = joi.object({
   name: joi.string(),
   title: joi.string(),
-  link: joi.link(),
+  link: joi.string().uri(), // Fixed typo: joi.link() -> joi.string().uri()
   description: joi.string(),
   endDate: joi.date(),
+  registrationDate: joi.date(),
 });

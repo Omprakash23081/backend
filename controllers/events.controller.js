@@ -33,7 +33,7 @@ const createEvents = async (req, res) => {
         .json(new ApiResponse(400, null, error.message));
     }
 
-    const { name, title, description, link, endDate } = req.body;
+    const { name, title, description, link, endDate, registrationDate } = req.body;
 
     if (req.user.role !== "admin") {
       return res
@@ -51,6 +51,7 @@ const createEvents = async (req, res) => {
       name,
       description,
       endDate,
+      registrationDate,
       image: imageUrl,
       title,
       link,
@@ -76,7 +77,7 @@ const updateEvents = async (req, res) => {
         .json(new ApiResponse(400, null, error.message));
     }
 
-    const { endDate, name, link, title, description } = req.body;
+    const { endDate, name, link, title, description, registrationDate } = req.body;
 
     if (req.user.role !== "admin") {
       return res
@@ -92,6 +93,7 @@ const updateEvents = async (req, res) => {
     if (description) updateData.description = description;
     if (link) updateData.link = link;
     if (endDate) updateData.endDate = endDate;
+    if (registrationDate) updateData.registrationDate = registrationDate;
 
     if (req.file?.path) {
       const imageUrl = await Upload(req.file.path);

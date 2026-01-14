@@ -18,7 +18,7 @@ export const UpdatevalidateNotes = joi
     year: joi.string(),
     type: joi.string(),
     isPremium: joi.boolean(),
-    status: joi.string().valid("draft", "published", "archived"),
+    status: joi.string().valid("draft", "published", "archived", "approved"),
     difficulty: joi.string().valid("easy", "medium", "hard"),
   })
   .min(1);

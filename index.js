@@ -24,3 +24,5 @@ connectDB()
   .catch((error) => {
     console.error("Server startup failed:", error);
   });
+
+console.log("Server logic refreshed...");

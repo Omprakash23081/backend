@@ -2,16 +2,18 @@ import joi from "joi";
 
 export const validateFaculty = joi.object({
   name: joi.string().required(),
-  departement: joi.string().required(),
-  exprence: joi.number().required().min(0),
+  department: joi.string().required(),
+  designation: joi.string().required(),
+  experience: joi.number().required().min(0),
   subject: joi.string().required(),
   description: joi.string(),
 });
 
 export const UpdatevalidateFaculty = joi.object({
   name: joi.string(),
-  departement: joi.string(),
-  exprence: joi.number().min(0),
+  department: joi.string(),
+  designation: joi.string(),
+  experience: joi.number().min(0),
   subject: joi.string(),
   description: joi.string(),
 });

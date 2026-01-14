@@ -20,6 +20,6 @@ export const validatePYQUpdate = joi.object({
   years: joi.array().items(joi.string()),
   answer: joi.string(),
   isPremium: joi.boolean(),
-  status: joi.string().valid("draft", "published", "archived"),
+  status: joi.string().valid("draft", "approved"),
   difficulty: joi.string().valid("easy", "medium", "hard"),
 });

@@ -5,6 +5,8 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import compression from "compression";
 import errorHandler from "./middleware/errorHandler.middleware.js";
+import bannerRouter from "./routes/banner.routes.js";
+import itemsRouter from "./routes/items.routes.js";
 
 const app = express();
 
@@ -51,6 +53,7 @@ app.use(
       "https://studysharps.vercel.app",
       "https://studysharp.netlify.app",
       "http://localhost:5173",
+      "http://localhost:5174",
     ],
     credentials: true,
   })
@@ -76,6 +79,12 @@ const limiter = rateLimit({
 });
 
 app.use("/api", limiter);
+
+/* =========================
+   ROUTES
+========================= */
+app.use("/api/v1/banners", bannerRouter);
+app.use("/api/v1/items", itemsRouter);
 
 /* =========================
    ERROR PIPELINE

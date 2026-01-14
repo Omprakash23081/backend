@@ -13,7 +13,7 @@ const createFaculty = async (req, res) => {
       .status(400)
       .json(new ApiResponse(400, err, "Plse enter valid Inputs"));
   }
-  const { name, departement, exprence, subject, description } = req.body;
+  const { name, department, designation, experience, subject, description } = req.body;
 
   if (req.user.role !== "admin") {
     return res
@@ -31,9 +31,10 @@ const createFaculty = async (req, res) => {
 
   const response = await Faculty.create({
     name,
-    departement,
+    department,
+    designation,
     description,
-    exprence,
+    experience,
     image: imageUrl,
     subject,
   });
@@ -81,7 +82,7 @@ const getSpicificFaculityDetails = async (req, res) => {
 };
 
 const updateFaculty = async (req, res) => {
-  const { name, departement, exprence, subject, description } = req.body;
+  const { name, department, designation, experience, subject, description } = req.body;
 
   if (req.user.role !== "admin") {
     return res
@@ -99,8 +100,9 @@ const updateFaculty = async (req, res) => {
 
   let updateData = {};
   if (name) updateData.name = name;
-  if (departement) updateData.departement = departement;
-  if (exprence) updateData.exprence = exprence;
+  if (department) updateData.department = department;
+  if (designation) updateData.designation = designation;
+  if (experience) updateData.experience = experience;
   if (subject) updateData.subject = subject;
   if (description) updateData.description = description;
 
