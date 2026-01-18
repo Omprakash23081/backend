@@ -52,11 +52,12 @@ app.use(
       "https://studysharp.netlify.app/",
       "https://studysharps.vercel.app",
       "https://studysharp.netlify.app",
+      "https://sspadminpanal.netlify.app",
       "http://localhost:5173",
       "http://localhost:5174",
     ],
     credentials: true,
-  })
+  }),
 );
 
 /* =========================
