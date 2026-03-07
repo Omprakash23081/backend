@@ -3,6 +3,7 @@
 import { Router } from "express";
 import verifyJWT from "../middleware/auth.middleware.js";
 import upload from "../middleware/multer.middleware.js";
+import optimizeFile from "../middleware/optimizeFile.middleware.js";
 import {
   uplodeItems,
   getItems,
@@ -19,13 +20,13 @@ const file = upload.single("image");
 router.route("/").get(getItems);
 
 //this router is used to uplode lost and found items by user
-router.route("/upload").post(verifyJWT, file, uplodeItems);
+router.route("/upload").post(verifyJWT, file, optimizeFile, uplodeItems);
 
 //this router will help to get specific lost and found item by id and update only for user who uplode the item and admin
 router.route("/my-documents").get(verifyJWT, getUserUplodedItems);
 
 //this router will help to update in specific Items
-router.route("/:id").patch(verifyJWT, file, updateItem);
+router.route("/:id").patch(verifyJWT, file, optimizeFile, updateItem);
 
 //this router will help to delete specific lost and found item by id but this will be only done by admin and user who uplode the item
 router.route("/:id").delete(verifyJWT, deleteItem);

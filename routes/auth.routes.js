@@ -12,6 +12,7 @@ import {
 
 // hear importing multer middleware for handling file uploads because express cant handle file uploads individually
 import multer from "../middleware/multer.middleware.js";
+import optimizeFile from "../middleware/optimizeFile.middleware.js";
 import verifyJWT from "../middleware/auth.middleware.js";
 import validate from "../middleware/validate.middleware.js";
 import { registerValidation, loginValidation, changePasswordValidation } from "../validation/user.validation.js";
@@ -38,6 +39,7 @@ router.route("/register").post(
     next();
   },
   upload.single("profileImage"),
+  optimizeFile,
   (req, res, next) => {
     console.log("DEBUG: Body after multer:", req.body);
     next();
@@ -55,7 +57,7 @@ router.route("/me/:id").get(getProfile);
 //update logged-in user profile
 router
   .route("/me")
-  .patch(verifyJWT, upload.single("profileImage"), updateProfile);
+  .patch(verifyJWT, upload.single("profileImage"), optimizeFile, updateProfile);
 
 //refresh access token
 router.route("/refreshToken").post(refreshAccessToken);

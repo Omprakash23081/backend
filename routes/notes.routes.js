@@ -3,6 +3,7 @@
 import { Router } from "express";
 import verifyJWT from "../middleware/auth.middleware.js";
 import multer from "../middleware/multer.middleware.js";
+import optimizeFile from "../middleware/optimizeFile.middleware.js";
 import {
   uplodeNotes,
   getNotes,
@@ -27,13 +28,13 @@ const file = upload.single("Notes");
 router.route("/").get(verifyJWT, getNotes);
 
 //upload study materials by admin and by user also but by admin not required to aprove but for user required to aprove by admin witch is uplode by user
-router.route("/upload").post(verifyJWT, file, uplodeNotes);
+router.route("/upload").post(verifyJWT, file, optimizeFile, uplodeNotes);
 
 //get specific study material by id witch is uploaded by admin or user after clicking specific material
 router.route("/:id").get(verifyJWT, getSpecificNotes);
 
 //update notes only by admin
-router.route("/:id").patch(verifyJWT, file, updateNotes);
+router.route("/:id").patch(verifyJWT, file, optimizeFile, updateNotes);
 
 //delete specific study material by id witch is uploaded by admin or user after clicking specific material this route is only for admin
 router.route("/:id").delete(verifyJWT, delateNotes);

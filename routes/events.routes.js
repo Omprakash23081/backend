@@ -9,6 +9,7 @@ import {
 } from "../controllers/events.controller.js";
 import verifyJWT from "../middleware/auth.middleware.js";
 import upload from "../middleware/multer.middleware.js";
+import optimizeFile from "../middleware/optimizeFile.middleware.js";
 
 const router = Router();
 
@@ -21,12 +22,12 @@ router.route("/").get(getEvents);
 router.route("/:id").get(getEvents); // Reusing getEvents or need specific controller? getEvents usually handles both if written that way, but let's check controller.
 
 //this route will help to update specific event details by id this will be only done by admin and event organizer
-router.route("/:id").patch(verifyJWT, file, updateEvents);
+router.route("/:id").patch(verifyJWT, file, optimizeFile, updateEvents);
 
 //this route will help to delete specific event details by id this will be only done by admin and event organizer
 router.route("/:id").delete(verifyJWT, delateEvents);
 
 //this route will help to create event this will be only done by admin and event organizer
-router.route("/").post(verifyJWT, file, createEvents);
+router.route("/").post(verifyJWT, file, optimizeFile, createEvents);
 
 export default router;

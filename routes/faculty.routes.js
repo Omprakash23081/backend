@@ -10,6 +10,7 @@ import {
   getSpicificFaculityDetails,
 } from "../controllers/facuelty.controller.js";
 import upload from "../middleware/multer.middleware.js";
+import optimizeFile from "../middleware/optimizeFile.middleware.js";
 
 const router = Router();
 
@@ -22,10 +23,10 @@ router.route("/").get(getFaculty);
 router.route("/:id").get(getSpicificFaculityDetails);
 
 //this route will help to create faculty member profile this will be only done by admin and faculty member himself
-router.route("/create").post(verifyJWT, file, createFaculty);
+router.route("/create").post(verifyJWT, file, optimizeFile, createFaculty);
 
 //this route will help to update specific faculty member details by id this will be only done by admin and faculty member himself
-router.route("/:id").patch(verifyJWT, file, updateFaculty);
+router.route("/:id").patch(verifyJWT, file, optimizeFile, updateFaculty);
 
 //this route will help to delete specific faculty member details by id this will be only done by admin and faculty member himself
 router.route("/:id").delete(verifyJWT, delateFaculty);

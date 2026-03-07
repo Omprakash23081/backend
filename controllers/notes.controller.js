@@ -60,8 +60,8 @@ const uplodeNotes = async (req, res) => {
     subjectName: subjectName?.toLowerCase(),
     teacherName: teacherName?.toLowerCase(),
     year,
-    isPremium,
-    isFull,
+    isPremium: isPremium === 'true' || isPremium === true,
+    isFull: isFull === 'true' || isFull === true, // Fix boolean casting
     status,
     uploadedBy: req.user,
     fileUrl: resourcesUrl,

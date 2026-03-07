@@ -10,20 +10,10 @@ import itemsRouter from "./routes/items.routes.js";
 
 const app = express();
 
-/* =========================
-   TRUST PROXY (Render/Vercel)
-========================= */
 app.set("trust proxy", 1);
-
-/* =========================
-   SECURITY + PERFORMANCE
-========================= */
 app.use(compression());
 app.use(helmet());
 
-/* =========================
-   HEALTH CHECK (NO LIMIT)
-========================= */
 app.get("/health", (req, res) => {
   res.status(200).json({
     status: "ok",
@@ -32,9 +22,6 @@ app.get("/health", (req, res) => {
   });
 });
 
-/* =========================
-   GLOBAL LOGGER (NO HEALTH)
-========================= */
 app.use((req, res, next) => {
   if (req.url !== "/health") {
     console.log(`[GLOBAL LOG] ${req.method} ${req.url}`);
@@ -42,19 +29,15 @@ app.use((req, res, next) => {
   next();
 });
 
-/* =========================
-   CORS (Node 22 SAFE)
-========================= */
 app.use(
   cors({
     origin: [
-      "https://studysharps.vercel.app/",
-      "https://studysharp.netlify.app/",
       "https://studysharps.vercel.app",
       "https://studysharp.netlify.app",
       "https://sspadminpanal.netlify.app",
       "http://localhost:5173",
       "http://localhost:5174",
+      "https://studysharp.in",
     ],
     credentials: true,
   }),
