@@ -43,17 +43,11 @@ app.use(
   }),
 );
 
-/* =========================
-   BODY PARSERS
-========================= */
 app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static("public"));
 
-/* =========================
-   RATE LIMIT (API ONLY)
-========================= */
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
@@ -64,15 +58,9 @@ const limiter = rateLimit({
 
 app.use("/api", limiter);
 
-/* =========================
-   ROUTES
-========================= */
 app.use("/api/v1/banners", bannerRouter);
 app.use("/api/v1/items", itemsRouter);
 
-/* =========================
-   ERROR PIPELINE
-========================= */
 app.use((err, req, res, next) => {
   if (err) console.error("Global Error:", err);
   next(err);
