@@ -11,7 +11,9 @@ const createPrintRequest = async (req, res) => {
       try {
         req.body.settings = JSON.parse(req.body.settings);
       } catch (e) {
-        return res.status(400).json(new ApiResponse(400, null, "Invalid settings JSON"));
+        return res
+          .status(400)
+          .json(new ApiResponse(400, null, "Invalid settings JSON"));
       }
     }
 
@@ -30,11 +32,15 @@ const createPrintRequest = async (req, res) => {
         .json(new ApiResponse(400, null, "Please upload a document to print"));
     }
 
-    const { vendorId, settings, transactionId, building, classNumber } = req.body;
-    
+    const { vendorId, settings, transactionId, building, classNumber } =
+      req.body;
+
     // Upload document
-    const documentUrl = await Upload(documentFile.buffer || documentFile.path, false);
-    
+    const documentUrl = await Upload(
+      documentFile.buffer || documentFile.path,
+      false,
+    );
+
     // Upload payment proof if exists
     let proofUrl = null;
     if (proofFile) {
@@ -56,7 +62,11 @@ const createPrintRequest = async (req, res) => {
     return res
       .status(201)
       .json(
-        new ApiResponse(201, printRequest, "Print request submitted successfully")
+        new ApiResponse(
+          201,
+          printRequest,
+          "Print request submitted successfully",
+        ),
       );
   } catch (error) {
     return res.status(500).json(new ApiResponse(500, null, error.message));
@@ -68,10 +78,15 @@ const getPrintRequests = async (req, res) => {
     const { role, _id } = req.user;
     let filter = {};
 
-    if (role === "student") {
-      filter.studentId = _id;
+    if (role === "admin") {
+      // Admins see everything
+      filter = {};
     } else if (role === "stationery_vendor") {
+      // Vendors only see requests placed WITH them
       filter.vendorId = _id;
+    } else {
+      // Students, Teachers, and all other roles only see requests placed BY them
+      filter.studentId = _id;
     }
 
     const requests = await PrintRequest.find(filter)
@@ -81,7 +96,7 @@ const getPrintRequests = async (req, res) => {
     return res
       .status(200)
       .json(
-        new ApiResponse(200, requests, "Print requests fetched successfully")
+        new ApiResponse(200, requests, "Print requests fetched successfully"),
       );
   } catch (error) {
     return res.status(500).json(new ApiResponse(500, null, error.message));
@@ -117,13 +132,13 @@ const updatePrintStatus = async (req, res) => {
       requestId: request._id,
       status: request.status,
       price: request.totalEstimatedPrice,
-      message: `Your print request is now ${request.status}`
+      message: `Your print request is now ${request.status}`,
     });
 
     return res
       .status(200)
       .json(
-        new ApiResponse(200, request, "Print request updated successfully")
+        new ApiResponse(200, request, "Print request updated successfully"),
       );
   } catch (error) {
     return res.status(500).json(new ApiResponse(500, null, error.message));
@@ -136,7 +151,9 @@ const deletePrintRequest = async (req, res) => {
     const request = await PrintRequest.findById(id);
 
     if (!request) {
-      return res.status(404).json(new ApiResponse(404, null, "Print request not found"));
+      return res
+        .status(404)
+        .json(new ApiResponse(404, null, "Print request not found"));
     }
 
     if (request.studentId.toString() !== req.user._id.toString()) {
@@ -144,7 +161,11 @@ const deletePrintRequest = async (req, res) => {
     }
 
     if (request.status !== "Pending") {
-      return res.status(400).json(new ApiResponse(400, null, "Only pending requests can be deleted"));
+      return res
+        .status(400)
+        .json(
+          new ApiResponse(400, null, "Only pending requests can be deleted"),
+        );
     }
 
     await PrintRequest.findByIdAndDelete(id);
@@ -164,7 +185,9 @@ const updatePrintRequest = async (req, res) => {
 
     const request = await PrintRequest.findById(id);
     if (!request) {
-      return res.status(404).json(new ApiResponse(404, null, "Print request not found"));
+      return res
+        .status(404)
+        .json(new ApiResponse(404, null, "Print request not found"));
     }
 
     if (request.studentId.toString() !== req.user._id.toString()) {
@@ -172,32 +195,48 @@ const updatePrintRequest = async (req, res) => {
     }
 
     if (request.status !== "Pending") {
-      return res.status(400).json(new ApiResponse(400, null, "Only pending requests can be updated"));
+      return res
+        .status(400)
+        .json(
+          new ApiResponse(400, null, "Only pending requests can be updated"),
+        );
     }
 
     if (transactionId) request.transactionId = transactionId;
     if (building) request.building = building;
     if (classNumber) request.classNumber = classNumber;
-    
+
     if (settings) {
-      const parsed = typeof settings === 'string' ? JSON.parse(settings) : settings;
+      const parsed =
+        typeof settings === "string" ? JSON.parse(settings) : settings;
       request.settings = { ...request.settings, ...parsed };
     }
 
     const files = req.files || {};
     if (files.paymentProof?.[0]) {
       const { Upload } = await import("../config/cloudinary.js");
-      request.paymentProofUrl = await Upload(files.paymentProof[0].buffer || files.paymentProof[0].path, true);
+      request.paymentProofUrl = await Upload(
+        files.paymentProof[0].buffer || files.paymentProof[0].path,
+        true,
+      );
     }
 
     await request.save();
 
     return res
       .status(200)
-      .json(new ApiResponse(200, request, "Print request updated successfully"));
+      .json(
+        new ApiResponse(200, request, "Print request updated successfully"),
+      );
   } catch (error) {
     return res.status(500).json(new ApiResponse(500, null, error.message));
   }
 };
 
-export { createPrintRequest, getPrintRequests, updatePrintStatus, deletePrintRequest, updatePrintRequest };
+export {
+  createPrintRequest,
+  getPrintRequests,
+  updatePrintStatus,
+  deletePrintRequest,
+  updatePrintRequest,
+};

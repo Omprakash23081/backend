@@ -6,18 +6,28 @@ import { emitToUser } from "../utils/socket.js";
 
 const createOrder = async (req, res) => {
   try {
-    let { vendorId, items, totalAmount, transactionId, building, classNumber } = req.body;
+    let { vendorId, items, totalAmount, transactionId, building, classNumber } =
+      req.body;
 
     // Handle FormData stringified fields
-    if (typeof items === 'string') {
+    if (typeof items === "string") {
       try {
         items = JSON.parse(items);
       } catch (e) {
-        return res.status(400).json(new ApiResponse(400, null, "Invalid items format"));
+        return res
+          .status(400)
+          .json(new ApiResponse(400, null, "Invalid items format"));
       }
     }
 
-    const { error } = orderValidationSchema.validate({ vendorId, items, totalAmount, transactionId, building, classNumber });
+    const { error } = orderValidationSchema.validate({
+      vendorId,
+      items,
+      totalAmount,
+      transactionId,
+      building,
+      classNumber,
+    });
     if (error) {
       return res.status(400).json(new ApiResponse(400, null, error.message));
     }
@@ -25,7 +35,10 @@ const createOrder = async (req, res) => {
     let paymentProofUrl = "";
     if (req.file) {
       const { Upload } = await import("../config/cloudinary.js");
-      paymentProofUrl = await Upload(req.file.buffer || req.file.path, req.file.isImage);
+      paymentProofUrl = await Upload(
+        req.file.buffer || req.file.path,
+        req.file.isImage,
+      );
     }
 
     const order = await Order.create({
@@ -64,10 +77,15 @@ const getOrders = async (req, res) => {
     const { role, _id } = req.user;
     let filter = {};
 
-    if (role === "student") {
-      filter.studentId = _id;
+    if (role === "admin") {
+      // Admins see everything
+      filter = {};
     } else if (role === "canteen_vendor" || role === "stationery_vendor") {
+      // Vendors only see orders placed WITH them
       filter.vendorId = _id;
+    } else {
+      // Students, Teachers, and all other roles only see orders placed BY them
+      filter.studentId = _id;
     }
 
     const orders = await Order.find(filter)
@@ -90,16 +108,20 @@ const updateOrderStatus = async (req, res) => {
     const { status } = req.body;
 
     if (!status) {
-      return res.status(400).json(new ApiResponse(400, null, "Status is required"));
+      return res
+        .status(400)
+        .json(new ApiResponse(400, null, "Status is required"));
     }
 
     const order = await Order.findById(id);
     if (!order) {
-      return res.status(404).json(new ApiResponse(404, null, "Order not found"));
+      return res
+        .status(404)
+        .json(new ApiResponse(404, null, "Order not found"));
     }
 
     // Only the assigned vendor or admin can update status
-    if (order.vendorId.toString() !== req.user._id.toString() && req.user.role !== "admin") {
+    if (!order.vendorId.equals(req.user._id) && req.user.role !== "admin") {
       return res.status(403).json(new ApiResponse(403, null, "Unauthorized"));
     }
 
@@ -110,7 +132,7 @@ const updateOrderStatus = async (req, res) => {
     emitToUser(order.studentId.toString(), "order_update", {
       orderId: order._id,
       status: order.status,
-      message: `Your order is now ${order.status}`
+      message: `Your order is now ${order.status}`,
     });
 
     return res
@@ -127,15 +149,25 @@ const deleteOrder = async (req, res) => {
     const order = await Order.findById(id);
 
     if (!order) {
-      return res.status(404).json(new ApiResponse(404, null, "Order not found"));
+      return res
+        .status(404)
+        .json(new ApiResponse(404, null, "Order not found"));
     }
 
-    if (order.studentId.toString() !== req.user._id.toString()) {
-      return res.status(403).json(new ApiResponse(403, null, "Unauthorized"));
+    const isOwner = order.studentId.equals(req.user._id);
+    const isAdmin = req.user.role === "admin";
+    const isVendor = order.vendorId.equals(req.user._id);
+
+    if (!isOwner && !isAdmin && !isVendor) {
+      return res
+        .status(403)
+        .json(new ApiResponse(403, null, "Unauthorized to cancel this order"));
     }
 
     if (order.status !== "Pending") {
-      return res.status(400).json(new ApiResponse(400, null, "Only pending orders can be deleted"));
+      return res
+        .status(400)
+        .json(new ApiResponse(400, null, "Only pending orders can be deleted"));
     }
 
     await Order.findByIdAndDelete(id);
@@ -152,18 +184,28 @@ const updateOrder = async (req, res) => {
   try {
     const { id } = req.params;
     const { transactionId, building, classNumber } = req.body;
-    
+
     const order = await Order.findById(id);
     if (!order) {
-      return res.status(404).json(new ApiResponse(404, null, "Order not found"));
+      return res
+        .status(404)
+        .json(new ApiResponse(404, null, "Order not found"));
     }
 
-    if (order.studentId.toString() !== req.user._id.toString()) {
-      return res.status(403).json(new ApiResponse(403, null, "Unauthorized"));
+    const isOwner = order.studentId.equals(req.user._id);
+    const isAdmin = req.user.role === "admin";
+    const isVendor = order.vendorId.equals(req.user._id);
+
+    if (!isOwner && !isAdmin && !isVendor) {
+      return res
+        .status(403)
+        .json(new ApiResponse(403, null, "Unauthorized to update this order"));
     }
 
     if (order.status !== "Pending") {
-      return res.status(400).json(new ApiResponse(400, null, "Only pending orders can be updated"));
+      return res
+        .status(400)
+        .json(new ApiResponse(400, null, "Only pending orders can be updated"));
     }
 
     if (transactionId) order.transactionId = transactionId;
